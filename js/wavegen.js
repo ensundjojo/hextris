@@ -1,5 +1,9 @@
+
+//Determines the next nextGen and difficulty of the wave object
 function blockDestroyed() {
-	if (waveone.nextGen > 1350) {
+	//Checks the current nextGen value and adjusts the speed at which the waves
+  //fall
+  if (waveone.nextGen > 1350) {
 		waveone.nextGen -= 30 * settings.creationSpeedModifier;
 	} else if (waveone.nextGen > 600) {
 		waveone.nextGen -= 8 * settings.creationSpeedModifier;
@@ -7,15 +11,17 @@ function blockDestroyed() {
 		waveone.nextGen = 600;
 	}
 
-	if (waveone.difficulty < 35) {
+	//Check the difficulty of the wave and raises the speed as neccessary
+  if (waveone.difficulty < 35) {
 		waveone.difficulty += 0.085 * settings.speedModifier;
 	} else {
 		waveone.difficulty = 35;
 	}
 }
-
+//This funtion takes in a hex object and adjusts it's values 
 function waveGen(hex) {
-	this.lastGen = 0;
+	//Class' attributes and default values
+  this.lastGen = 0;
 	this.last = 0;
 	this.nextGen = 2700;
 	this.start = 0;
@@ -24,6 +30,9 @@ function waveGen(hex) {
 	this.hex = hex;
 	this.difficulty = 1;
 	this.dt = 0;
+  
+  //Function that sets the nextGen properties based off the current waveGen
+  //updateWave()
 	this.update = function() {
 		this.currentFunction();
 		this.dt = (settings.platform == 'mobile' ? 14 : 16.6667) * MainHex.ct;
@@ -34,7 +43,8 @@ function waveGen(hex) {
 			}
 		}
 	};
-
+//Function to re-assign attributes depending it's current properties
+  //randomizeWaves()
 	this.randomGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
 			this.ct++;
@@ -63,7 +73,7 @@ function waveGen(hex) {
 			}
 		}
 	};
-
+//Computes the difficulty of the current wave
 	this.computeDifficulty = function() {
 		if (this.difficulty < 35) {
 			var increment;
@@ -78,7 +88,9 @@ function waveGen(hex) {
 			this.difficulty += increment * (1/2);
 		}
 	};
-
+//Determines if the next wave is ready to be created and if so
+//what the properties of the new wave should be
+//Creates all 6 sides of our hexagon ring
 	this.circleGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen + 500) {
 			var numColors = randInt(1, 4);
@@ -108,6 +120,7 @@ function waveGen(hex) {
 		}
 	};
 
+//Same as previous fucntion, but only creates half the circle
 	this.halfCircleGeneration = function() {
 		if (this.dt - this.lastGen > (this.nextGen + 500) / 2) {
 			var numColors = randInt(1, 3);
@@ -127,7 +140,8 @@ function waveGen(hex) {
 			this.shouldChangePattern();
 		}
 	};
-
+//Generates new blocks cross-wise that are all the same color
+  //sameColorGeneration
 	this.crosswiseGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
 			var ri = randInt(0, colors.length);
@@ -139,8 +153,9 @@ function waveGen(hex) {
 			this.shouldChangePattern();
 		}
 	};
-
-	this.spiralGeneration = function() {
+//Generates new blocks with colors that alternate
+	//alternatingColorGeneration()
+  this.spiralGeneration = function() {
 		var dir = randInt(0, 2);
 		if (this.dt - this.lastGen > this.nextGen * (2 / 3)) {
 			if (dir) {
@@ -153,7 +168,8 @@ function waveGen(hex) {
 			this.shouldChangePattern();
 		}
 	};
-
+//Generates two different blocks at in two different locations
+  //doublesameColorGeneration
 	this.doubleGeneration = function() {
 		if (this.dt - this.lastGen > this.nextGen) {
 			var i = randInt(0, colors.length);
@@ -196,6 +212,5 @@ function waveGen(hex) {
 	};
 
 	// rest of generation functions
-
 	this.currentFunction = this.randomGeneration;
 }
