@@ -1,6 +1,6 @@
 // t: current time, b: begInnIng value, c: change In value, d: duration
-function easeOutCubic(t, b, c, d) {
-	return c * ((t = t / d - 1) * t * t + 1) + b;
+function easeOutCubic(currentTime, beginningVal, changeInVal, duration) {
+	return changeInVal * ((currentTime = currentTime / duration- 1) * currentTime * currentTime + 1) + beginningVal;
 }
 
 function renderText(x, y, fontSize, color, text, font) {
@@ -144,8 +144,8 @@ function hideText() {
 function gameOverDisplay() {
 	settings.ending_block=false;
 	Cookies.set("visited",true);
-	var c = document.getElementById("canvas");
-	c.className = "blur";
+	var changeInVal = document.getElementById("canvas");
+	changeInVal.className = "blur";
 	updateHighScores();
 	if (highscores.length === 0 ){
 		$("#currentHighScore").text(0);
