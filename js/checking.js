@@ -9,7 +9,10 @@ function search(twoD,oneD){
 }
 
 function floodFill(hex, side, index, deleting) {
-	if (hex.blocks[side] === undefined || hex.blocks[side][index] === undefined) return;
+	if (hex.blocks[side] === undefined || hex.blocks[side][index] === undefined){
+		return;	
+	} 
+
 	//store the color
 	var color = hex.blocks[side][index].color;
 	//nested for loops for navigating the blocks
@@ -34,23 +37,27 @@ function floodFill(hex, side, index, deleting) {
 			}
 		}
 	}
+
+
 }
 
 function consolidateBlocks(hex,side,index){
 	//record which sides have been changed
-	var sidesChanged =[];
-	var deleting=[];
+	var sidesChanged = [];
+	var deleting = [];
 	var deletedBlocks = [];
+
 	//add start case
 	deleting.push([side,index]);
+	
 	//fill deleting
-	var newHex = hex;	
 	floodFill(hex,side,index,deleting);
-
 	//make sure there are more than 3 blocks to be deleted
-	if(deleting.length<3){return;}
-	var i;
-	for(i=0; i<deleting.length;i++) {
+	if(deleting.length<3){
+		return;
+	}
+	
+	for(var i=0; i<deleting.length;i++) {
 		var arr = deleting[i];
 		//just making sure the arrays are as they should be
 		if(arr !== undefined && arr.length==2) {
@@ -58,6 +65,7 @@ function consolidateBlocks(hex,side,index){
 			if(sidesChanged.indexOf(arr[0])==-1){
 				sidesChanged.push(arr[0]);
 			}
+			
 			hex.blocks[arr[0]][arr[1]].deleted = 1;
 			deletedBlocks.push(hex.blocks[arr[0]][arr[1]]);
 		}
@@ -65,6 +73,7 @@ function consolidateBlocks(hex,side,index){
 	
 	// add scores
 	var now = MainHex.ct;
+	// if the current score is less than the combo time
 	if(now - hex.lastCombo < settings.comboTime ){
 		settings.comboTime = (1/settings.creationSpeedModifier) * (waveone.nextGen/16.666667) * 3;
 		hex.comboMultiplier += 1;
@@ -73,13 +82,19 @@ function consolidateBlocks(hex,side,index){
 		hex.texts.push(new Text(coords['x'],coords['y'],"x "+hex.comboMultiplier.toString(),"bold Q","#fff",fadeUpAndOut));
 	}
 	else{
+		// otherwise, set a new combo
 		settings.comboTime = 240;
 		hex.lastCombo = now;
 		hex.comboMultiplier = 1;
 	}
+
 	var adder = deleting.length * deleting.length * hex.comboMultiplier;
-	hex.texts.push(new Text(hex.x,hex.y,"+ "+adder.toString(),"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
+	hex.texts.push(
+		new Text(hex.x,hex.y,"+ "+adder.toString(),
+		"bold Q ",deletedBlocks[0].color,fadeUpAndOut));
+	
 		hex.lastColorScored = deletedBlocks[0].color;
+	
 	score += adder;
 }
 
