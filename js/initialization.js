@@ -1,7 +1,9 @@
 $(document).ready(function() {
 	initialize();
 });
-function initialize(a) {
+
+
+function setWindowSettings(){
 	window.rush = 1;
 	window.lastTime = Date.now();
 	window.iframHasLoaded = false;
@@ -35,6 +37,7 @@ function initialize(a) {
 	window.textOpacity = 0;
 	window.prevGameState = undefined;
 	window.op = 0;
+	
 	window.saveState = localStorage.getItem("saveState") || "{}";
 	if (saveState !== "{}") {
 		op = 1;
@@ -46,56 +49,6 @@ function initialize(a) {
 			window.setTimeout(callback, 1000 / framerate);
 		};
 	})();
-	$('#clickToExit').bind('click', toggleDevTools);
-	window.settings;
-	if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        $('.rrssb-email').remove();
-		settings = {
-			os: "other",
-			platform: "mobile",
-			startDist: 227,
-			creationDt: 60,
-			baseScale: 1.4,
-			scale: 1,
-			prevScale: 1,
-			baseHexWidth: 87,
-			hexWidth: 87,
-			baseBlockHeight: 20,
-			blockHeight: 20,
-			rows: 7,
-			speedModifier: 0.73,
-			speedUpKeyHeld: false,
-			creationSpeedModifier: 0.73,
-			comboTime: 310
-		};
-	} else {
-		settings = {
-			os: "other",
-			platform: "nonmobile",
-			baseScale: 1,
-			startDist: 340,
-			creationDt: 9,
-			scale: 1,
-			prevScale: 1,
-			hexWidth: 65,
-			baseHexWidth: 87,
-			baseBlockHeight: 20,
-			blockHeight: 15,
-			rows: 8,
-			speedModifier: 0.65,
-			speedUpKeyHeld: false,
-			creationSpeedModifier: 0.65,
-			comboTime: 310
-		};
-
-	}
-	if(/Android/i.test(navigator.userAgent)) {
-		settings.os = "android";
-	}
-
-	if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i)){
-		settings.os="ios";
-	}
 
 	window.canvas = document.getElementById('canvas');
 	window.ctx = canvas.getContext('2d');
@@ -112,14 +65,6 @@ function initialize(a) {
 	window.prevScore = 0;
 	window.numHighScores = 3;
 
-	highscores = [];
-	if (localStorage.getItem('highscores')) {
-		try {
-			highscores = JSON.parse(localStorage.getItem('highscores'));
-		} catch (e) {
-			highscores = [];
-		}
-	}
 	window.blocks = [];
 	window.MainHex;
 	window.gdx = 0;
@@ -133,9 +78,12 @@ function initialize(a) {
 	window.importedHistory = undefined;
 	window.startTime = undefined;
 	window.gameState;
-	setStartScreen();
-	if (a != 1) {
-		window.canRestart = 1;
+
+	$('#clickToExit').bind('click', toggleDevTools);
+}
+
+function startGame(a){
+	window.canRestart = 1;
 		window.onblur = function(e) {
 			if (gameState == 1) {
 				pause();
@@ -207,8 +155,91 @@ function initialize(a) {
 				document.body.addEventListener('mousedown', handleClickBefore, false);
 			}
 		}, 1);
+}
+
+function setScores(){
+	highscores = [];
+	if (localStorage.getItem('highscores')) {
+		try {
+			highscores = JSON.parse(localStorage.getItem('highscores'));
+		} catch (e) {
+			highscores = [];
+		}
 	}
 }
+
+function setUserAgentSettings(){
+	window.settings;
+
+	if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        $('.rrssb-email').remove();
+		settings = {
+			os: "other",
+			platform: "mobile",
+			startDist: 227,
+			creationDt: 60,
+			baseScale: 1.4,
+			scale: 1,
+			prevScale: 1,
+			baseHexWidth: 87,
+			hexWidth: 87,
+			baseBlockHeight: 20,
+			blockHeight: 20,
+			rows: 7,
+			speedModifier: 0.73,
+			speedUpKeyHeld: false,
+			creationSpeedModifier: 0.73,
+			comboTime: 310
+		};
+	} else {
+		settings = {
+			os: "other",
+			platform: "nonmobile",
+			baseScale: 1,
+			startDist: 340,
+			creationDt: 9,
+			scale: 1,
+			prevScale: 1,
+			hexWidth: 65,
+			baseHexWidth: 87,
+			baseBlockHeight: 20,
+			blockHeight: 15,
+			rows: 8,
+			speedModifier: 0.65,
+			speedUpKeyHeld: false,
+			creationSpeedModifier: 0.65,
+			comboTime: 310
+		};
+
+	}
+
+	if(/Android/i.test(navigator.userAgent)) {
+		settings.os = "android";
+	}
+
+	if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i)){
+		settings.os="ios";
+	}
+
+	return settings;
+}
+
+function initialize(a) {
+	// Get settings after setting them 
+	var settings = setUserAgentSettings();
+	
+	// set remainder of settings
+	setWindowSettings(settings);
+	setScores();
+	setStartScreen();
+	
+	// make sure the game can initialize, and then proceed to start
+	if (a != 1) {
+		startGame();
+	}
+}
+
+
 
 function startBtnHandler() {
 	setTimeout(function() {
