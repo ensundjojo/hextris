@@ -2,6 +2,7 @@
 //remember to update history function to show the respective iter speeds
 function update(dt) {
 	MainHex.dt = dt;
+	var st = dt;
 
 	if (gameState == 1) {
 		waveone.update();
@@ -15,6 +16,18 @@ function update(dt) {
 	var block;
 
 	var objectsToRemove = [];
+	updateCollide(st);
+	updateConsolidate(st);
+	updateDestroyed(st);
+	updateSplice(st);
+	MainHex.ct += dt;
+
+}
+
+//function that update the game if the blocks collide during real time 
+function updateCollide(dt){
+
+	MainHex.dt = dt;
 	for (i = 0; i < blocks.length; i++) {
 		MainHex.doesBlockCollide(blocks[i]);
 		if (!blocks[i].settled) {
@@ -23,7 +36,13 @@ function update(dt) {
 			blocks[i].removed = 1;
 		}
 	}
+}
 
+
+//function that update the game if the block could be combine (3 stacks or more)
+function updateConsolidate(dt){
+	
+	MainHex.dt = dt;
 	for (i = 0; i < MainHex.blocks.length; i++) {
 		for (j = 0; j < MainHex.blocks[i].length; j++) {
 			if (MainHex.blocks[i][j].checked ==1 ) {
@@ -32,7 +51,11 @@ function update(dt) {
 			}
 		}
 	}
+}
 
+//function that update the game if the block got combined and destroyed (3 stacks or more)
+function updateDestroyed(dt){
+	MainHex.dt = dt;
 	for (i = 0; i < MainHex.blocks.length; i++) {
 		lowestDeletedIndex = 99;
 		for (j = 0; j < MainHex.blocks[i].length; j++) {
@@ -51,7 +74,11 @@ function update(dt) {
 			}
 		}
 	}
+}
 
+//function that update the game if the block got destroyed and what part of the hexagon is left
+function updateSplice(dt){
+	MainHex.dt = dt;
 	for (i = 0; i < MainHex.blocks.length; i++) {
 		for (j = 0; j < MainHex.blocks[i].length; j++) {
 			block = MainHex.blocks[i][j];
@@ -69,6 +96,6 @@ function update(dt) {
 			i--;
 		}
 	}
-
-	MainHex.ct += dt;
 }
+	
+
